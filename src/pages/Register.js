@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react'
 import { Logo, FormRow, Alert } from '../components'
 import Wrapper from '../assets/wrappers/RegisterPage'
+import { useAppContext } from '../context/appContext'
 
 const initialState = {
   name: '',
   email: '',
   password: '',
   isMemeber: true,
-  showAlert: true,
 }
 
 const Register = () => {
   const [values, setValues] = useState(initialState)
   //global state and useNvigate
+  const { isLoading, showAlert, displayAlert } = useAppContext(initialState)
 
   const toggleMember = () => {
     setValues({ ...values, isMemeber: !values.isMemeber })
@@ -20,10 +21,15 @@ const Register = () => {
 
   const onSubmit = (e) => {
     e.preventDefault()
-    console.log(e.target)
+    const { name, email, password, isMemeber } = values
+    if (!email || !password || (!isMemeber && !name)) {
+      displayAlert()
+      return
+    }
+    console.log(values)
   }
   const handleChange = (e) => {
-    console.log(e.target)
+    setValues({ ...values, [e.target.name]: e.target.value })
   }
 
   return (
@@ -31,7 +37,7 @@ const Register = () => {
       <form className='form' onSubmit={onSubmit}>
         <Logo />
         <h3>{values.isMemeber ? 'Login' : 'Register'}</h3>
-        {values.showAlert && <Alert />}
+        {showAlert && <Alert />}
         {/* name input */}
         {!values.isMemeber && (
           <FormRow
